@@ -2,15 +2,10 @@
 Collection of useful script and Python modules
 
 Ideally the util.py should be in your python path so you can import it easily.
-A way to achieve this is to have a python start up script with a suitable command in it.
-Create a file __.pythonrc__ in your home with these lines:
+A way to achieve this is to append this folder to the python PATH bash variable.
+To do so, add the following to your __.bashrc__ file:
 ```
-import sys, os
-sys.path.append(os.getenv("HOME")+"/bin/")
-``` 
-And add the following to your __.bashrc__ file
-```
-export PYTHONSTARTUP="$HOME/.pythonrc"
+export PYTHOPATH="$PYTHONPATH:/path/to/util/"
 ```
 
 To have the scripts as bash command, add this folder to the path or, probably better, link them to a folder which is in the path alread, e.g. ~/bin.
