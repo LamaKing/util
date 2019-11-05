@@ -184,6 +184,18 @@ def adjust_col_width(rows, align_char="<", offset=5):
     return [set_width(r, [w+offset for w in cols_w], align_char=align_char)
             for r in rows]
 
+def set_float_width(args, w=None, align_char="<", offset=2, prec=15):
+    """Set convert list of float to string and set width
+
+    Set precision of conversion with "prec" keyword.
+    Then pass the converted floats to set_width function
+    """
+
+    # Converte all fields to string.
+    conv_tmpl= "%"+"%i.%i" % (prec+5, prec)+"f"
+    args = [conv_tmpl % n for n in args ]
+    return set_width(args, w=w, align_char=align_char, offset=offset)
+
 #------------------------------------------------------------------------------#
 # Lists manipulators
 #------------------------------------------------------------------------------#
