@@ -22,10 +22,10 @@ def pretty_columns(argv):
                         type=str, nargs="?",
                         help='filename (if blank use stdin);')
     # Optional args
-    parser.add_argument('--comment',
-                        dest='comment_c', default="#",
-                        help="""set comment character (use -1 for None).
-                                NOTE: beware of the number of columns.""")
+    parser.add_argument('-c', '--comment',
+                        dest='comment_c', default="#", metavar="char",
+                        help="""set comment character (default='#'). Use -1 to disable filter).
+                                NOTE: must be #col file == #col comments.""")
     parser.add_argument('--split',
                         action='store_true', dest='split_flg',
                         help='put comments at beginning of file;')
