@@ -102,12 +102,15 @@ def load_file(filename, comment_char="#"):
 def load_float_file(filename, comment_char="#"):
     """Load given numeric filename.
 
-    Each non-comment field will be cast to float.
+    Each non-comment field will be cast to float and the whole stream in NumPy array.
     Divide lines between comments and data.
     Not suitable for big files."""
+    import numpy as np
     with open(filename, 'r') as in_file:
         # Appreciate the power of **kwarg expansion!
-        return load_stream(in_file, **{"comment_char" : comment_char, "f": float})
+        c, d = load_stream(in_file, **{"comment_char" : comment_char, "f": float})
+        d = np.array(d)
+        return c, d
 
 #------------------------------------------------------------------------------#
 # String formatting
