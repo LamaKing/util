@@ -10,7 +10,7 @@ def get_y(l):
 # A function to plot vectors in 2D
 def plot_v_2d(ax, v_origin, v_vector, 
              v_color, 
-             v_width=0.005, nohead=False):
+             v_width=0.005, nohead=False, qv_opt={}):
     """Plot a collection of (origin point, vector), i.e. a vector field, on a given Matplotlib axis.
     
     Basically a wrapper of quiver. the ordered list of origins and vectors and we will take care of passing them.
@@ -30,12 +30,13 @@ def plot_v_2d(ax, v_origin, v_vector,
     # Set the length to 0 and the width to 1, in units of the shaft width, i.e. overlap with the body.
     if nohead: nohead={"headlength": 0, "headwidth":1}
     else: nohead = {}
-    
+    qv_opt = {**nohead, **qv_opt} # Not working as expected...
+
     ax.quiver(oxs, oys, xs, ys, 
               color=v_color,
               scale=1, scale_units="xy", angles="xy", # Use xy as definition of angle and lenght scale. See manual.
               width=v_width, 
-              **nohead)
+              **qv_opt)
     offset = 2
     ax.set_xlim(min([i+j for i, j in zip(oxs,xs)]+oxs)-offset, 
                 max([i+j for i, j in zip(oxs,xs)])+offset) # Resize axis to accomodate all (arbitrary offset...)
