@@ -81,11 +81,14 @@ def pretty_columns(argv):
         # Adjust only data lines
         data_adj = adjust_col_width([l for i, l in enumerate(data)
                                      if i not in c_num] )
+
+        di = 0
         for i, l in enumerate(data):
             if i in c_num:
                 print(l, file=output)
             else:
-                print(data_adj[i-len(c_num)], file=output)
+                print(data_adj[di], file=output)
+                di += 1
 
     #-------------------------------------------------------------------------------
     # Close input and return output string stream
