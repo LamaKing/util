@@ -223,3 +223,19 @@ def list_uniq(l):
     seen = set()
     seen_add = seen.add # Faster than evaulating seen.add at each iter
     return [x for x in l if not (x in seen or seen_add(x))]
+
+#------------------------------------------------------------------------------#
+# Matplotlib utilities 
+#------------------------------------------------------------------------------#
+def colorbar(mappable):
+    """Try to handle colorbar nicely"""
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
+    import matplotlib.pyplot as plt 
+    last_axes = plt.gca()
+    ax = mappable.axes
+    fig = ax.figure
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="5%", pad=0.05)
+    cbar = fig.colorbar(mappable, cax=cax)
+    plt.sca(last_axes)
+    return cbar
