@@ -11,7 +11,7 @@ def get_y(l):
 def plot_v_2d(ax, v_origin, v_vector,
               v_color,
               v_width=0.005, nohead=False, offset=2,
-              plt_opt={}):
+              qv_opt={}):
     """Plot a collection of (origin point, vector), i.e. a vector field, on a given Matplotlib axis.
 
     Basically a wrapper of quiver. the ordered list of origins and vectors and we will take care of passing them.
@@ -33,13 +33,13 @@ def plot_v_2d(ax, v_origin, v_vector,
     else: nohead = {}
     qv_opt = {**nohead, **qv_opt} # Not working as expected...
 
-    ax.quiver(oxs, oys, xs, ys, 
+    ax.quiver(oxs, oys, xs, ys,
               color=v_color,
               scale=1, scale_units="xy", angles="xy", # Use xy as definition of angle and lenght scale. See manual.
-              width=v_width, 
+              width=v_width,
               **qv_opt)
     offset = 2
-    ax.set_xlim(min([i+j for i, j in zip(oxs,xs)]+oxs)-offset, 
+    ax.set_xlim(min([i+j for i, j in zip(oxs,xs)]+oxs)-offset,
                 max([i+j for i, j in zip(oxs,xs)])+offset) # Resize axis to accomodate all (arbitrary offset...)
     ax.set_ylim(min([i+j for i, j in zip(oys,ys)]+oys)-offset,
                 max([i+j for i, j in zip(oys,ys)])+offset)
