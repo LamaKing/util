@@ -10,10 +10,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 
-o = np.array([0,0,0])
+o = np.array([0, 0, 0])
+
 
 def plot_displ(ax, start, end,
-               atm_scale=1, v_len=1, normalize=False, plt_uc=False, plt_endpt=False):
+               atm_scale=1, v_len=1, normalize=False, plt_uc=False, plt_endpt=False, mindisp=0.01):
     """sa sa check"""
     if False in [isinstance(start, ase.Atoms), isinstance(end, ase.Atoms)]:
         raise TypeError("Start and end geometry need to be ASE Atoms obj")
@@ -29,30 +30,33 @@ def plot_displ(ax, start, end,
 
     if plt_uc:
         from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-        a,b,c = start.get_cell()
+        a, b, c = start.get_cell()
 
         # Tested only for hexagonal cell
-        verts = np.stack([o, a, a+b, b, o, # Base
-                          c+o, # Move to top
-                          c+o+a, o+a, c+o+a, # Move to top a, go down to base a and back up
-                          c+o+a+b, o+a+b, c+o+a+b, # Same for second vertex in base
-                          c+o+b, o+b, c+o+b,
-                          c+o, o]) # Return to origin
+        verts = np.stack([o, a, a + b, b, o,  # Base
+                          c + o,  # Move to top
+                          c + o + a, o + a, c + o + a,  # Move to top a, go down to base a and back up
+                          c + o + a + b, o + a + b, c + o + a + b,  # Same for second vertex in base
+                          c + o + b, o + b, c + o + b,
+                          c + o, o])  # Return to origin
         x = verts[:, 0]
         y = verts[:, 1]
         z = verts[:, 2]
-        uc_style = {'alpha': 0., # Controls only the alpha of the faces, apparently
+        uc_style = {'alpha': 0.,  # Controls only the alpha of the faces, apparently
                     'facecolors': None,
-                    'edgecolors' : "black",
+                    'edgecolors': "black",
                     'ls': "--",
                     'lw': 0.4}
 
-        verts = [list(zip(x,y,z))]
+        verts = [list(zip(x, y, z))]
         uc = Poly3DCollection(verts, **uc_style)
         ax.add_collection3d(uc)
 
+    for xyz in dp:  # setting dp to 0 if it falls below a set value.
+        if np.linalg.norm(xyz) < mindisp:
+            xyz[:] = 0
 
-    # Plot the displacement arrows
+    # Plot the displacement arrows ! Added a
     ax.quiver(p0[:, 0], p0[:, 1], p0[:, 2],
               dp[:, 0], dp[:, 1], dp[:, 2],
               length=v_len, normalize=normalize)
@@ -61,49 +65,50 @@ def plot_displ(ax, start, end,
     ax.scatter(p0[:, 0], p0[:, 1], p0[:, 2],
                c=elem_color,
                edgecolors="black",
-               s=atm_scale*elem_size)
+               s=atm_scale * elem_size)
 
     if plt_endpt:
         end_scale = 0.1
-        p1_plot = (p0+v_len*dp) # Compute the scaled position of the end atom
+        p1_plot = (p0 + v_len * dp)  # Compute the scaled position of the end atom
         ax.scatter(p1_plot[:, 0], p1_plot[:, 1], p1_plot[:, 2],
                    c=elem_color,
                    edgecolors="gray",
-                   s=atm_scale*elem_size*end_scale)
+                   s=atm_scale * elem_size * end_scale)
 
         # Plot ending point unit cell
         if plt_uc:
             from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-            a,b,c = end.get_cell()
+            a, b, c = end.get_cell()
 
             # Tested only for hexagonal cell
-            verts = np.stack([o, a, a+b, b, o, # Base
-                              c+o, # Move to top
-                              c+o+a, o+a, c+o+a, # Move to top a, go down to base a and back up
-                              c+o+a+b, o+a+b, c+o+a+b, # Same for second vertex in base
-                              c+o+b, o+b, c+o+b,
-                              c+o, o]) # Return to origin
+            verts = np.stack([o, a, a + b, b, o,  # Base
+                              c + o,  # Move to top
+                              c + o + a, o + a, c + o + a,  # Move to top a, go down to base a and back up
+                              c + o + a + b, o + a + b, c + o + a + b,  # Same for second vertex in base
+                              c + o + b, o + b, c + o + b,
+                              c + o, o])  # Return to origin
             x = verts[:, 0]
             y = verts[:, 1]
             z = verts[:, 2]
-            uc_style = {'alpha': 0., # Controls only the alpha of the faces, apparently
+            uc_style = {'alpha': 0.,  # Controls only the alpha of the faces, apparently
                         'facecolors': None,
-                        'edgecolors' : "gray",
+                        'edgecolors': "gray",
                         'ls': "--",
                         'lw': 0.2}
 
-            verts = [list(zip(x,y,z))]
+            verts = [list(zip(x, y, z))]
             uc = Poly3DCollection(verts, **uc_style)
             ax.add_collection3d(uc)
 
     return ax
 
+
 def plot_displ_CLI(argv):
     """sa sa check"""
 
-    #-------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------
     # Argument parser
-    #-------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------
     parser = argparse.ArgumentParser(description=plot_displ_CLI.__doc__)
     # Positional arguments
     # Optional args
@@ -126,7 +131,7 @@ def plot_displ_CLI(argv):
                         action='store_true', dest='norm',
                         help='normalize vectors to same size.')
     parser.add_argument('--rep',
-                        dest='replica', type=int, nargs=3, default=(1,1,1),
+                        dest='replica', type=int, nargs=3, default=(1, 1, 1),
                         help='replicate systems along unit cell.')
     parser.add_argument('--uc',
                         dest='unitcell', action='store_true',
@@ -134,10 +139,13 @@ def plot_displ_CLI(argv):
     parser.add_argument('--debug',
                         action='store_true', dest='debug',
                         help='show debug informations.')
+    parser.add_argument('--mindisp',
+                        dest='mindisp', type=float, default=0.01,
+                        help='minimum displacement (in ang) for arrow to be drawn')
 
-    #-------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------
     # Initialize and check variables
-    #-------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------
     args = parser.parse_args(argv)
 
     # Set up LOGGER
@@ -151,36 +159,37 @@ def plot_displ_CLI(argv):
 
     c_log.debug(args)
 
-    #-------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------
     # Load geometry
-    #-------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------
 
     start = ase_read(args.start)
     del start.constraints
     try:
-        start = ase_sort(start*args.replica)
+        start = ase_sort(start * args.replica)
     except Exception as e:
         c_log.error("Starting geom replication went wrong. Expect errors")
 
     end = ase_read(args.end)
     del end.constraints
     try:
-        end = ase_sort(end*args.replica)
+        end = ase_sort(end * args.replica)
     except Exception as e:
         c_log.error("Ending geom replication went wrong. Expect errors")
 
-    #-------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------
     # Plot
-    #-------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------
     fig = plt.figure()
     fig.set_dpi(150)
     ax = fig.gca(projection='3d')
 
     ax = plot_displ(ax, start, end,
-                    atm_scale=args.atm_scale, # size of atoms
-                    v_len=args.v_len, normalize=args.norm, # displacement arrows
-                    plt_uc=args.unitcell, plt_endpt=args.show_endpt) # To plot or not to plot
+                    atm_scale=args.atm_scale,  # size of atoms
+                    v_len=args.v_len, normalize=args.norm, mindisp=args.mindisp,  # displacement arrows
+                    plt_uc=args.unitcell, plt_endpt=args.show_endpt)  # To plot or not to plot
     plt.show()
+
 
 if __name__ == "__main__":
     plot_displ_CLI(sys.argv[1:])
