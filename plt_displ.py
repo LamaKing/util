@@ -14,8 +14,16 @@ o = np.array([0, 0, 0])
 
 
 def plot_displ(ax, start, end,
-               atm_scale=1, v_len=1, normalize=False, plt_uc=False, plt_endpt=False, mindisp=0.01):
-    """sa sa check"""
+               atm_scale=1, v_len=1, normalize=False, plt_uc=False, plt_endpt=False, mindisp=0.0):
+    """Plot displacement field between two given geometries.
+    
+    atm_scale, v_len regulate scale of dots representing atoms and arrows length. normalize is passed to matplotlib qiver3D.
+    plt_uc draws the unit cell of the starting geometry.
+    plt_end draws the atoms at ending posistions. There's a bit of conflict between this, normalised and length. Also end unit cell will be drawn.
+    mindisp sets a threshold on length of arrows to be plotted.
+    
+    Returns the matplotlib axis given as arg.
+    """
     if False in [isinstance(start, ase.Atoms), isinstance(end, ase.Atoms)]:
         raise TypeError("Start and end geometry need to be ASE Atoms obj")
 
@@ -104,7 +112,7 @@ def plot_displ(ax, start, end,
 
 
 def plot_displ_CLI(argv):
-    """sa sa check"""
+    """Command Line Wrapper for plot displacement Python function."""
 
     # -------------------------------------------------------------------------------
     # Argument parser
@@ -140,8 +148,8 @@ def plot_displ_CLI(argv):
                         action='store_true', dest='debug',
                         help='show debug informations.')
     parser.add_argument('--mindisp',
-                        dest='mindisp', type=float, default=0.01,
-                        help='minimum displacement (in ang) for arrow to be drawn')
+                        dest='mindisp', type=float, default=0.0,
+                        help='minimum displacement (in Angstrom) for arrow to be drawn')
 
     # -------------------------------------------------------------------------------
     # Initialize and check variables
